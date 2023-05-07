@@ -1,0 +1,10 @@
+---
+moniker: 123456-C-UE1
+logLevel: debug
+subnetIds:
+  - subnet-05eb5ea7076fadfaf
+  - subnet-0250c05c739b49fe2
+  - subnet-0b426991fa9a9e85a
+vpcId: vpc-0bb4770f772ddb6b3
+lambda-router-provisionedConcurrency: 2
+lambda-router-reservedConcurrency: 5

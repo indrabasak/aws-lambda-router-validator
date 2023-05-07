@@ -1,0 +1,42 @@
+{
+  "name": "aws-lambda-router-validator",
+  "version": "1.0.0",
+  "description": "AWS Lambda based router and OpenAPI validator",
+  "repository": "https://github.com/indrabasak/aws-reverse-proxy-example.git",
+  "author": "indra.basak1@gmail.com",
+  "license": "MIT",
+  "scripts": {
+    "test": "NODE_ENV=test ./node_modules/.bin/jest --silent --coverage -c jest.config.js",
+    "lint": "eslint ./src/**/*.js -f table"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.16.7",
+    "@babel/eslint-parser": "^7.17.0",
+    "@babel/plugin-transform-runtime": "^7.18.2",
+    "@babel/preset-env": "^7.16.8",
+    "babel-jest": "^28.1.0",
+    "eslint": "^8.32.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-formatter-table": "^7.32.1",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jest": "^25.2.2",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.3.1",
+    "jest-html-reporter": "^3.4.2",
+    "jest-junit": "^13.0.0",
+    "jest-sonar-reporter": "^2.0.0",
+    "prettier": "2.5.1"
+  },
+  "dependencies": {
+    "aws-sdk": "^2.1304.0",
+    "axios": "^1.3.6",
+    "js-yaml": "^4.1.0",
+    "lambda-api": "^0.12.0",
+    "path-to-regexp": "^6.2.1",
+    "serverless-deployment-bucket": "^1.6.0",
+    "serverless-http": "^3.1.1",
+    "uuid": "^9.0.0",
+    "winston": "^3.8.2"
+  }
+}

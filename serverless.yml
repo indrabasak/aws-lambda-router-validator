@@ -1,0 +1,85 @@
+service: contract-validator
+frameworkVersion: '3'
+
+useDotenv: true
+
+custom:
+  baseAppName: contract-validator
+  tracing: true
+  deployEnv: ${opt:stage, 'dev'}
+  config: ${file(environments/${self:provider.region}/${opt:stage, self:provider.stage, 'dev'}.yml)}
+  deploymentBucket:
+    name: '${self:service}-deployments-${self:provider.region}-${aws:accountId}'
+    policy: { "Version": "2008-10-17", "Statement": [{"Effect": "Deny","Principal": "*","Action": "s3:*","Resource": ["arn:aws:s3:::${self:service}-deployments-${aws:region}-${aws:accountId}/*","arn:aws:s3:::${self:service}-deployments-${aws:region}-${aws:accountId}"],"Condition": {"Bool": {"aws:SecureTransport": "false"}}}]}
+    blockPublicAccess: true
+    skipPolicySetup: false
+    versioning: true
+    tags:
+      - Key: STAGE
+        Value: ${opt:stage, 'dev'}
+      - Key: 'adsk:moniker'
+        Value: ${self:custom.config.moniker}
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+  stage: ${opt:stage, 'dev'}
+  region: ${opt:region, 'us-east-1'}
+  cfnRole: arn:aws:iam::${aws:accountId}:role/AdskCfnAdministratorAccessExecutionRole
+  endpointType: regional
+  apiGateway:
+    description: 'Contract Testing API'
+    disableDefaultEndpoint: false
+  tracing:
+    apiGateway: true
+    lambda: true
+  environment:
+    APP_NAME: contract-validator
+    APP_VERSION: 1.0.0
+    APP_ENVIRONMENT: ${opt:stage}
+    LOG_LEVEL: ${self:custom.config.logLevel}
+
+package:
+  individually: true
+  exclude:
+    - ./**
+    - '!node_modules/**'
+    - '!environments/**'
+
+functions:
+  router:
+    name: ${self:service}-router
+    handler: src/router/index.handler
+    role: LambdaRole
+    package:
+      include:
+        - src/common/**
+        - src/router/**
+        - config/**
+        - environments/**
+        - schemas/**
+    memorySize: 512
+    timeout: 30
+#    provisionedConcurrency: ${self:custom.config.lambda-router-provisionedConcurrency}
+    reservedConcurrency: ${self:custom.config.lambda-router-reservedConcurrency}
+    vpc:
+      securityGroupIds:
+        - Ref: LambdaSecurityGroup
+      subnetIds: ${self:custom.config.subnetIds}
+    environment:
+      BASE_PATH: '/api/v1/contract'
+      ROUTE_CONFIG: 'config/routes.yml'
+    events:
+      - http:
+          path: '/api/v1/contract/{proxy+}'
+          method: ANY
+          cors: true
+
+resources:
+  - ${file(resources/role-lambda.yml)}
+  - ${file(resources/role-api-gateway.yml)}
+  - ${file(resources/sg-lambda-vpc.yml)}
+
+plugins:
+  - serverless-deployment-bucket
+

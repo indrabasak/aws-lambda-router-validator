@@ -1,0 +1,5 @@
+routes:
+  - id: sage-id
+    path: /sage/(.*)
+    uri: https://sage.dpeservices-dev.autodesk.com
+
