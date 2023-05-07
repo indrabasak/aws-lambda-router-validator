@@ -1,4 +1,5 @@
 const fs = require('fs');
+const {parse, stringify} = require('flatted');
 const logger = require('../../common/lambda-logger');
 const { EventProcessor } = require('../../common/event-processor');
 
@@ -6,7 +7,7 @@ let processor = null;
 
 exports.process = async (request, response) => {
   console.log('22222222222');
-  logger.info(`request: ${request}`);
+  console.log(stringify(request));
   // logger.info(`response: ${JSON.stringify(response)}`);
 
   if (processor == null) {

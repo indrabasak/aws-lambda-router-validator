@@ -16,7 +16,7 @@ class RouteConfig {
 
     this.routes = [];
     config.routes.forEach((route) => {
-      const regex = pathToRegexp(this.basePath + route.path, [], OPTIONS);
+      const regex = pathToRegexp(route.path, [], OPTIONS);
       this.routes.push(new Route(route.id, route.path, route.uri, regex));
     });
   }
@@ -24,9 +24,14 @@ class RouteConfig {
   findMatchingRoute(path) {
     let matchedRoute = null;
 
+    let newPath = path;
+    if (path && !path.startsWith('/')) {
+      newPath = `/${path}`;
+    }
+
     // eslint-disable-next-line no-restricted-syntax
     for (const route of this.routes) {
-      if (route.regex.test(path)) {
+      if (route.regex.test(newPath)) {
         logger.debug(`------------------------ matching route found: ${route}`);
         matchedRoute = route;
         break;

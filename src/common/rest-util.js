@@ -30,6 +30,17 @@ class RestUtil {
       throw e;
     }
   }
+
+  static async request(baseURL, method, url, params, headers, data) {
+    const config = { baseURL, method, url, params, headers, data };
+
+    try {
+      return await axios(config);
+    } catch (e) {
+      console.error('exception occurred while making HTTP request', e);
+      return e.response;
+    }
+  }
 }
 
 module.exports = { RestUtil };
