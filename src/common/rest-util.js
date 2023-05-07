@@ -38,7 +38,7 @@ class RestUtil {
       return await axios(config);
     } catch (e) {
       console.error('exception occurred while making HTTP request', e);
-      return e.response;
+      return null;
     }
   }
 }

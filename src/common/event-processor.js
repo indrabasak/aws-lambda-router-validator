@@ -28,8 +28,19 @@ class EventProcessor {
     logger.info(`body: ${JSON.stringify(data)}`);
 
     console.log('55555555');
+    const validationObj = {
+      route: null,
+      request: {
+        method,
+        proxy,
+        params,
+        headers,
+        data
+      }
+    };
     const route = this.routeConfig.findMatchingRoute(proxy);
     if (route) {
+      validationObj.route = route;
       const rawResponse = await RestUtil.request(
         route.uri,
         method,
@@ -40,13 +51,32 @@ class EventProcessor {
       );
       console.log(`^^^^^^^^^ raw response: ${rawResponse}`);
 
+      const rspHeaders = rawResponse.headers;
+      const cleanedHeaders = {};
+      if (rspHeaders) {
+        // add headers
+        Object.entries(rspHeaders).forEach(([key, value]) => {
+          cleanedHeaders[key] = value;
+        });
+      }
+      console.log(rspHeaders);
+      validationObj.response = {
+        successful: true,
+        status: rawResponse.status,
+        headers: cleanedHeaders,
+        data: rawResponse.data
+      };
+
       EventProcessor.mapResponse(response, rawResponse);
+
       console.log('6666666666 - 1');
     } else {
       response.status(409);
       console.log('6666666666 - 2');
       response.json({ message: `Route not found for path ${proxy}` });
     }
+
+    return validationObj;
   }
 
   static filterHeaders(headers) {
@@ -56,27 +86,15 @@ class EventProcessor {
     return newHeaders;
   }
 
-  // static filterHeaders(headers) {
-  //   ...(headers.accept && { accept: headers.accept }),
-  //   ...(headers.origin && { origin: headers.origin }),
-  //   ...(headers['user-agent'] && { 'user-agent': headers['user-agent'] }),
-  //   ...(headers['content-type'] && { 'content-type': headers['content-type'] }),
-  //   ...(headers['accept-encoding'] && {
-  //     'accept-encoding': headers['accept-encoding']
-  //   })
-  // }
-
   static mapResponse(response, rawResponse) {
     console.log('^^^^^^^^^ map response');
     const { status, headers, data } = rawResponse;
 
     if (status) {
-      // add status code
       response.status(status);
     }
 
     if (headers) {
-      // add headers
       Object.entries(headers).forEach(([key, value]) => {
         response.header(key, value);
       });
@@ -84,7 +102,6 @@ class EventProcessor {
 
     if (data) {
       if (_.isString(data)) {
-        // add body and send
         response.send(data);
       } else if (_.isElement(rawResponse)) {
         response.html(data);

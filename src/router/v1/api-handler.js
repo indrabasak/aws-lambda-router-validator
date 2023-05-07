@@ -1,5 +1,5 @@
 const fs = require('fs');
-const {parse, stringify} = require('flatted');
+const { stringify } = require('flatted');
 const logger = require('../../common/lambda-logger');
 const { EventProcessor } = require('../../common/event-processor');
 
@@ -17,5 +17,6 @@ exports.process = async (request, response) => {
     );
   }
 
-  await processor.route(request, response);
+  const validationObj = await processor.route(request, response);
+  console.log(validationObj);
 };
