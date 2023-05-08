@@ -69,16 +69,44 @@ functions:
     environment:
       BASE_PATH: '/api/v1/contract'
       ROUTE_CONFIG: 'config/routes.yml'
+      QUEUE_URL:
+        Ref: ValidationQueue
     events:
       - http:
           path: '/api/v1/contract/{proxy+}'
           method: ANY
           cors: true
 
+  validator:
+    name: ${self:service}-validator
+    handler: src/validator/index.handler
+    role: ValidationLambdaRole
+    package:
+      include:
+        - src/common/**
+        - src/validator/**
+        - schemas/**
+    memorySize: 512
+    timeout: 300
+#    provisionedConcurrency: ${self:custom.config.lambda-validator-provisionedConcurrency}
+    reservedConcurrency: ${self:custom.config.lambda-validator-reservedConcurrency}
+    vpc:
+      securityGroupIds:
+        - Ref: LambdaSecurityGroup
+      subnetIds: ${self:custom.config.subnetIds}
+    events:
+      - sqs:
+          arn:
+            Fn::GetAtt:
+              - ValidationQueue
+              - Arn
+
 resources:
-  - ${file(resources/role-lambda.yml)}
   - ${file(resources/role-api-gateway.yml)}
+  - ${file(resources/role-lambda.yml)}
+  - ${file(resources/role-validator-lambda.yml)}
   - ${file(resources/sg-lambda-vpc.yml)}
+  - ${file(resources/queue-validation.yml)}
 
 plugins:
   - serverless-deployment-bucket

@@ -1,0 +1,25 @@
+Resources:
+  ValidationQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: ${self:service}-validation-queue
+      KmsMasterKeyId: "alias/aws/sqs"
+      VisibilityTimeout: 300
+      Tags:
+        - Key: 'adsk:moniker'
+          Value: ${self:custom.config.moniker}
+
+  ValidationQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues: [!Ref ValidationQueue]
+      PolicyDocument:
+        Statement:
+          - Sid: router-lambda-send-message
+            Action:
+              - "SQS:SendMessage"
+            Effect: "Allow"
+            Resource: !GetAtt ValidationQueue.Arn
+            Principal:
+              AWS:
+                - ${aws:accountId}

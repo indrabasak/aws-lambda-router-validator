@@ -29,7 +29,7 @@
     "prettier": "2.5.1"
   },
   "dependencies": {
-    "aws-sdk": "^2.1304.0",
+    "aws-sdk": "^2.1373.0",
     "axios": "^1.3.6",
     "flatted": "^3.2.7",
     "js-yaml": "^4.1.0",

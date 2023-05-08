@@ -8,3 +8,5 @@ subnetIds:
 vpcId: vpc-0bb4770f772ddb6b3
 lambda-router-provisionedConcurrency: 2
 lambda-router-reservedConcurrency: 5
+lambda-validator-provisionedConcurrency: 2
+lambda-validator-reservedConcurrency: 5

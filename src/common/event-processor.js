@@ -2,10 +2,12 @@ const _ = require('lodash');
 const { RouteConfig } = require('./route-config');
 const logger = require('./lambda-logger');
 const { RestUtil } = require('./rest-util');
+const { QueueUtil } = require('./queue-util');
 
 class EventProcessor {
-  constructor(basePath, ymlConfig) {
+  constructor(basePath, ymlConfig, queueUrl) {
     this.routeConfig = new RouteConfig(basePath, ymlConfig);
+    this.queueUrl = queueUrl;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -67,16 +69,16 @@ class EventProcessor {
         data: rawResponse.data
       };
 
+      this.sendValidationData(validationObj);
+
       EventProcessor.mapResponse(response, rawResponse);
 
       console.log('6666666666 - 1');
     } else {
-      response.status(409);
+      response.status(404);
       console.log('6666666666 - 2');
-      response.json({ message: `Route not found for path ${proxy}` });
+      response.json({ error: `Route not found for path ${proxy}` });
     }
-
-    return validationObj;
   }
 
   static filterHeaders(headers) {
@@ -84,6 +86,10 @@ class EventProcessor {
     delete newHeaders.host;
 
     return newHeaders;
+  }
+
+  async sendValidationData(validationObj) {
+    await QueueUtil.sendMessage(this.queueUrl, validationObj);
   }
 
   static mapResponse(response, rawResponse) {

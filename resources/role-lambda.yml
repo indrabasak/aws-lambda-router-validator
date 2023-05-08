@@ -45,3 +45,12 @@ Resources:
                   - cloudwatch:DescribeAlarms
                 Resource: '*'
 
+        - PolicyName: ${self:service}-lambda-sqs
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - sqs:*
+                Resource:
+                  - Fn::GetAtt: [ValidationQueue, Arn]
