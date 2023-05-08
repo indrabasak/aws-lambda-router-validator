@@ -4,6 +4,9 @@ AWS Lambda Router and Validator Example
 lambda not only routes request to its intended target but also validates the request and its corresponding
 response against a specified OpenAPI specification.
 
+### Architecture
+![](./img/contract-testing-lambda-router-validator.svg)
+
 ### Install Modules
 To install all the dependencies of the project, cd into the home directory and execute the following command,
 ```
