@@ -69,7 +69,7 @@ class EventProcessor {
         data: rawResponse.data
       };
 
-      this.sendValidationData(validationObj);
+      await this.sendValidationData(validationObj);
 
       EventProcessor.mapResponse(response, rawResponse);
 

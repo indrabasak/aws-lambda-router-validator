@@ -2,7 +2,6 @@ const fs = require('fs');
 const { stringify } = require('flatted');
 const logger = require('../../common/lambda-logger');
 const { EventProcessor } = require('../../common/event-processor');
-const { QueueUtil } = require('../../common/queue-util');
 
 let processor = null;
 
